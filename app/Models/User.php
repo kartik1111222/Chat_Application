@@ -46,6 +46,14 @@ class User extends Authenticatable
 
     public function message(): HasOne
     {
-        return $this->hasOne(Comment::class, 'user_id', 'id');
+        return $this->hasOne(User::class, 'user_id', 'id');
     }
+
+    public function conversation(): HasOne
+    {
+        return $this->hasOne(Conversation::class, 'user_id', 'id');
+    }
+
+    
+    
 }

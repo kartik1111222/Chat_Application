@@ -668,6 +668,11 @@
             .msg_menu {
                 margin-left:
             }
+
+            label.error {
+            color: #dc3545;
+            font-size: 14px;
+        }
         }
 
     </style>
@@ -684,7 +689,7 @@
                     <div class="row heading">
                         <div class="col-sm-3 col-xs-3 heading-avatar">
                             <div class="heading-avatar-icon">
-                                <img src="https://bootdey.com/img/Content/avatar/avatar1.png">
+                                <img src="{{asset('assets/images/profile/' . Auth()->user()->profile)}}">
                             </div>
                         </div>
                         <div class="col-sm-1 col-xs-1  heading-dot  pull-right">
@@ -707,18 +712,21 @@
                             </div>
                         </div>
                     </form>
+                    
                     <div class="row sideBar">
-                        <div class="row sideBar-body">
+                        @foreach($conversation as $conversation_data)
+                       
+                        
+                        <div class="row sideBar-body" onclick="open_user_chat({{$conversation_data->user->id}})">
                             <div class="col-sm-3 col-xs-3 sideBar-avatar">
                                 <div class="avatar-icon">
-                                    <img src="https://bootdey.com/img/Content/avatar/avatar1.png">
+                                    <img src="{{asset('assets/images/profile/' . $conversation_data->user->profile)}}">
                                 </div>
                             </div>
                             <div class="col-sm-9 col-xs-9 sideBar-main">
                                 <div class="row">
                                     <div class="col-sm-8 col-xs-8 sideBar-name">
-                                        <span class="name-meta">John Doe
-                                        </span>
+                                        <span class="name-meta">{{$conversation_data->user->firstname}} {{$conversation_data->user->lastname}}</span>
                                     </div>
                                     <div class="col-sm-4 col-xs-4 pull-right sideBar-time">
                                         <span class="time-meta pull-right">18:18
@@ -727,7 +735,9 @@
                                 </div>
                             </div>
                         </div>
+                        @endforeach
                     </div>
+
                 </div>
 
                 <div class="side-two">
@@ -808,12 +818,34 @@
                         </div>
                     </div>
                     @foreach($to_chat_message as $to_chat_value)
-                    @if(($value->id == $to_chat_value->from_user_id) )
                     <div class="row message-body">
                         <div class="col-sm-12 message-main-receiver">
                             <div class="receiver">
-                                <div class="message-text" id="friend_chat_msg">
-                                    {{$to_chat_value->message}}
+                                <div class="message-text friend_chat_msg" id="myInput{{$to_chat_value->id}}">
+                                    {{$to_chat_value->message->message}}
+                                    <button type="submit" onclick="copyToClipboard({{$to_chat_value->message->id}})"><i class="fa-solid fa-copy"></i></button>
+                                    <button type="button" onclick="showReplyContainer({{$to_chat_value->message->id}})"><i class="fa-solid fa-reply"></i></button>
+
+                                    @if($to_chat_value->message->file != null)
+                                    <img src="{{asset('assets/images/chat_img/' . $to_chat_value->message->file)}}" style="height: 5cm; width: 10cm;">
+                                    @endif
+
+                                    @if($to_chat_value->message->video != null)
+                                    <video width="320" height="240" controls>
+                                        <source src="{{asset('assets/images/chat_img/video/' . $to_chat_value->message->video)}}" type="video/mp4">
+                                      Your browser does not support the video tag.
+                                  </video>
+                                  @endif
+
+                                  @if($to_chat_value->message->doc_file != null)
+                                   <iframe src="{{asset('assets/images/chat_img/doc_file/' . $to_chat_value->message->doc_file)}}" frameborder="0" style="width:100%;min-height:640px;"></iframe>
+                                  @endif
+                                  
+                                  @if($to_chat_value->message->audio != null)
+                                    <audio controls="" style="vertical-align: middle" src="{{asset('assets/images/chat_img/audio/' . $to_chat_value->message->video)}}" type="audio/mp3" controlslist="nodownload">
+                                        Your browser does not support the audio element.
+                                    </audio>
+                                  @endif    
                                 </div>
                                 <span class="message-time pull-right">
 
@@ -821,7 +853,6 @@
                             </div>
                         </div>
                     </div>
-                    @endif
                     @endforeach
 
                     @foreach($from_chat_message as $from_chat_value)
@@ -831,23 +862,34 @@
                     <div class="row message-body " style="position: relative">
                         <div class="col-sm-12 message-main-sender">
                             <div class="sender" style="position: relative">
-                                <div class="message-text your_chat_msg" id="myInput{{$from_chat_value->id}}">
-                                    {{$from_chat_value->message}}<br>
+                                <div class="message-text your_chat_msg" id="myInput{{$from_chat_value->message->id}}">
+                                    {{$from_chat_value->message->message}}<br>
 
-                                    @if($from_chat_value->file != null)
-                                    <img src="{{asset('assets/images/chat_img/' . $from_chat_value->file)}}">
+                                    @if($from_chat_value->message->file != null)
+                                    <img src="{{asset('assets/images/chat_img/' . $from_chat_value->message->file)}}" style="height: 5cm; width: 10cm;">
                                     @endif
 
-                                    @if($from_chat_value->video != null)
+                                    @if($from_chat_value->message->video != null)
                                     <video width="320" height="240" controls>
-                                        <source src="{{asset('assets/images/chat_img/' . $from_chat_value->video)}}" type="video/mp4">
+                                        <source src="{{asset('assets/images/chat_img/video/' . $from_chat_value->message->video)}}" type="video/mp4">
                                       Your browser does not support the video tag.
-                                  </video>
-                                  @endif
+                                    </video>
+                                    @endif
 
-                                  @if($from_chat_value->doc_file != null)
-                                   <iframe src="{{asset('assets/images/chat_img/' . $from_chat_value->doc_file)}}" frameborder="0" style="width:100%;min-height:640px;"></iframe>
+                                  @if($from_chat_value->message->doc_file != null)
+                                   <iframe src="{{asset('assets/images/chat_img/doc_file/' . $from_chat_value->message->doc_file)}}" frameborder="0" style="width:100%;min-height:640px;"></iframe>
                                   @endif
+                                  
+                                  @if($from_chat_value->message->audio != null)
+                                    <audio controls="" style="vertical-align: middle" src="{{asset('assets/images/chat_img/audio/' . $from_chat_value->message->video)}}" type="audio/mp3" controlslist="nodownload">
+                                        Your browser does not support the audio element.
+                                    </audio>
+                                  @endif                       
+                                  {{-- @if($from_chat_value->doc_file != null)
+                                   <iframe src="{{asset('assets/images/chat_img/' . $from_chat_value->doc_file)}}" frameborder="0" style="width:100%;min-height:640px;"></iframe>
+                                  @else
+                                  <iframe src="https://view.officeapps.live.com/op/view.aspx?src={{asset('assets/images/chat_img/' . $from_chat_value->doc_file)}}" frameborder="0" style="width:100%;min-height:640px;"></iframe>
+                                  @endif --}}
 
                                   {{-- @if(upload is image)
    <img src="{{image url}}"/>
@@ -859,7 +901,9 @@
    //manage things here
  @endif --}}
                                 </div>
-                                <button onclick="messageOptions()" style="position: absolute;bottom: 0;right: 5px;"><i class="fa fa-ellipsis-v fa-2x  pull-right" aria-hidden="true"></i></button>
+                                <button type="submit" onclick="copyToClipboard({{$from_chat_value->message->id}})"><i class="fa-solid fa-copy"></i></button>
+                                <button type="button" onclick="showReplyContainer({{$from_chat_value->message->id}})"><i class="fa-solid fa-reply"></i></button>
+                                {{-- <button onclick="messageOptions()" style="position: absolute;bottom: 0;right: 5px;"><i class="fa fa-ellipsis-v fa-2x  pull-right" aria-hidden="true"></i></button> --}}
 
 
                                 <span class="message-time pull-right">
@@ -867,10 +911,9 @@
                                 </span>
                             </div>
                         </div>
-                        <div class="msg_menu" style="width:100px; position: absolute; top: 0px; left: 640px;background-color: #fff;border: 2px solid black; height: 100px; display: none;padding-top: 20px" id="msg_option">
-                            <button type="submit" onclick="copyToClipboard({{$from_chat_value->id}})"><i class="fa-solid fa-copy"></i></button>
-                            <button type="button" onclick="showReplyContainer({{$from_chat_value->id}})"><i class="fa-solid fa-reply"></i></button>
-                        </div>
+                        {{-- <div class="msg_menu" style="width:100px; position: absolute; top: 0px; left: 640px;background-color: #fff;border: 2px solid black; height: 100px; display: none;padding-top: 20px" id="msg_option"> --}}
+                            
+                        {{-- </div> --}}
                     </div>
                     @endif
                     @endforeach
@@ -883,51 +926,44 @@
                         @csrf
                         <div class="col-sm-9 col-xs-9 reply-main" id="message_field" >
                             <img id="image-preview" style="max-width: 300px; max-height: 300px;" />
-                            <textarea rows="3" cols="70" name="message" style="border: 2"  id="message{{$value->id}}" placeholder="enter text here"></textarea>
-                            
+                            <textarea rows="1" cols="50" name="message" style="border: 2"  id="message{{$value->id}}" placeholder="enter text here"></textarea>
                         </div>
-                       
-                        {{-- <button onclick="files_options()"><i class="fa fa-ellipsis-v fa-2x" aria-hidden="true" style=""></i></button> --}}
-                       
-                        <div class="col-sm-1 col-xs-1" id="files_upload">
-                            <label for="video" class="custom-file-upload">
+                        <div class="col-sm-2" id="files_upload">
+                            <label for="video{{$value->id}}" class="custom-file-upload">
                                 <i class="fa fa-video fa-2x" aria-hidden="true"></i>
                             </label>
-                            <input type="file" id="video" name="video" class="video" style="display: none;">
+                            <input type="file" id="video{{$value->id}}" name="video" class="video" style="display: none;">
                             
                             
-                            <label for="image" class="custom-file-upload">
+                            <label for="image{{$value->id}}" class="custom-file-upload">
                                 <i class="fa fa-image fa-2x" aria-hidden="true"></i>
                             </label>
-                            <input type="file" id="image" name="image" class="photo" style="display: none;">
+                            <input type="file" id="image{{$value->id}}" name="image" class="photo" style="display: none;">
 
-                            <label for="doc_file" class="custom-file-upload">
+                            <label for="doc_file{{$value->id}}" class="custom-file-upload">
                                 <i class="fa-solid fa-folder"></i>
                             </label>
-                            <input type="file" id="doc_file" name="doc_file" class="photo" style="display: none;">
+                            <input type="file" id="doc_file{{$value->id}}" name="doc_file" class="photo" style="display: none;">
 
-                             
-                            
+                            <label for="audio{{$value->id}}" class="custom-file-upload">
+                                <i class="fa-solid fa-microphone" aria-hidden="true" style="size: 500px"></i>
+                            </label>
+                            <input type="file" id="audio{{$value->id}}" name="audio" class="photo" style="display: none;">
                         </div>
                         <div class="col-sm-1 col-xs-1">
                             
                         </div>
-                            <!-- Add a reply container -->
-                        {{-- <div class="reply-container" id="replyContainer{{$from_chat_value->id}}" style="display: none;">
-                        <input type="text" id="replyInput{{$from_chat_value->id}}" placeholder="Type your reply">
-                        <button type="button" onclick="sendReply({{$from_chat_value->id}})">Send</button>
-                </div> --}}
+                         
 
-                <div class="reply-container hidden" id="replyContainer">
-                    <textarea class="reply-input" id="replyInput" placeholder="Type your reply here"></textarea>
-                    {{-- <button type="button" onclick="sendReply({{$from_chat_value->id}})">Send</button> --}}
+                        <div class="reply-container hidden" id="replyContainer">
+                            <textarea class="reply-input" id="replyInput" placeholder="Type your reply here"></textarea>
+                        </div>
+                        <div class="col-sm-1 col-xs-1 holder">
+                            <button type="submit" data-receiver-id="{{$value->id}}"><i class="fa-regular fa-paper-plane"></i></button>
+                        </div>
+                    </form>
                 </div>
-                <div class="col-sm-1 col-xs-1 holder">
-                    <button type="submit" data-receiver-id="{{$value->id}}"><i class="fa-regular fa-paper-plane"></i></button>
-                </div>
-                </form>
             </div>
-        </div>
         @endforeach
     </div>
     </div>
@@ -935,8 +971,7 @@
 </html>
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
-{{-- <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script> --}}
-{{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"> --}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.20.0/jquery.validate.min.js" integrity="sha512-WMEKGZ7L5LWgaPeJtw9MBM4i5w5OSBlSjTjCtSnvFJGSVD26gE5+Td12qN5pvWXhuWaWcVwF++F7aqu9cvqP0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.concat.min.js" integrity="sha512-2hIlk2fL+NNHkULe9gGdma/T5vSYk80U5tvAFSy3dGEl8XD4h2i6frQvHv5B+bm/Itmi8nJ6krAcj5FWFcBGig==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.16/clipboard.min.js"></script>
@@ -953,8 +988,6 @@
                 "left": "-100%"
             });
         });
-
-
     })
 
     $(document).ready(function() {
@@ -1093,12 +1126,12 @@
             , contentType: false
             , processData: false
             , success: function(response) {
-
-                $('.your_chat_msg').html(response.from_chat_message);
-                $('#message_field').load(document.URL + ' #message_field');
+             $('#message_field').load();
             }
         });
     });
+
+    
 
 </script>
 
