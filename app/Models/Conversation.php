@@ -22,8 +22,8 @@ class Conversation extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function conversation(): BelongsTo
-    {
-        return $this->belongsTo(Message::class);
-    }
+    // public function conversation(): BelongsTo
+    // {
+    //     return $this->belongsTo(Message::class);
+    // }
 }
