@@ -11,6 +11,10 @@ class Conversation extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+      'id', 'from_user_id', 'to_user_id'
+    ];
+
     public function message(): HasOne
     {
         return $this->hasOne(Message::class, 'conversation_id', 'id');

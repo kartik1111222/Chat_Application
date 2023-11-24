@@ -10,6 +10,10 @@ class Message extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+      'id', 'message', 'file', 'video', 'doc_file', 'audio', 'conversation_id'
+    ];
+
     public function conversation(): BelongsTo
     {
         return $this->belongsTo(Conversation::class);

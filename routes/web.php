@@ -28,6 +28,7 @@ Route::prefix('user')->name('user.')->group(function(){
        Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
        Route::get('chat', [ChatController::class, 'chat'])->name('chat');
        Route::post('chat_message', [ChatController::class, 'chat_message'])->name('chat_message');
+       Route::delete('remove_chat/{id}', [ChatController::class, 'remove_chat'])->name('remove_chat');
     });
 });
 
