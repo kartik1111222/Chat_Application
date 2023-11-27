@@ -792,7 +792,7 @@
             </div>
 
             @foreach($users as $value)
-           
+
             <input type="hidden" name="receiver_user_id" id="receiver_user_id{{$value->id}}" value="{{$value->id}}">
             <div class="col-sm-8 conversation user_chat" style="display: none" id="user_chat{{$value->id}}">
 
@@ -821,31 +821,38 @@
                     </div>
                     @foreach($chat_messages as $chat_messages_value)
                     @if($value->id == $chat_messages_value->from_user_id)
-                    
+                    {{-- @if($value->id == $chat_messages_value->from_user_id) --}}
+
                     <div class="row message-body">
                         <div class="col-sm-12 message-main-receiver">
                             <div class="receiver">
                                 <div class="message-text friend_chat_msg" id="myInput{{isset($chat_messages_value->message) ? $chat_messages_value->message->id : ' '}}">
-                                     {{isset($chat_messages_value->message) ? $chat_messages_value->message->message : ' '}}
 
-                                     @if($chat_messages_value->message->file)
-                                     <img src="{{asset('assets/images/chat_img/' . $chat_messages_value->message->file)}}">
-                                     @endif
+                                    @if($chat_messages_value->message->message_type == '1')
+                                    
+                                      {{$chat_messages_value->message->message}}
 
-                                     @if($chat_messages_value->message->video)
-                                    <video width="320" height="240" controls>
-                                        <source src="{{asset('assets/images/chat_img/video/' . $chat_messages_value->message->video)}}" type="video/mp4">
-                                      Your browser does not support the video tag.
-                                    </video>
-                                    @endif
+                                    @elseif($chat_messages_value->message->message_type == '2')
+                                       
+                                      <img src="{{asset('assets/images/chat_img/' . $chat_messages_value->message->message)}}">
 
-                                    @if($chat_messages_value->message->doc_file)
-                                    <iframe src="{{asset('assets/images/chat_img/doc_file/' . $chat_messages_value->message->doc_file)}}" frameborder="0" style="width:100%;min-height:640px;"></iframe>
-                                    @endif
+                                    @elseif($chat_messages_value->message->message_type == '3')
+                                    
+                                       <video width="320" height="240" controls>
+                                          <source src="{{asset('assets/images/chat_img/video/' . $chat_messages_value->message->message)}}" type="video/mp4">
+                                          Your browser does not support the video tag.
+                                        </video>
 
-
-                                    @if($chat_messages_value->message->audio)
+                                    @elseif($chat_messages_value->message->message_type == '4')
                                    
+                                        <iframe src="{{asset('assets/images/chat_img/doc_file/' . $chat_messages_value->message->message)}}" frameborder="0" style="width:100%;min-height:640px;"></iframe>
+
+                                    @elseif($chat_messages_value->message->message_type == '5')
+                                    
+                                        <audio controls>
+                                          <source src="{{asset('assets/images/chat_img/audio/' . $chat_messages_value->message->message)}}" type="audio/mp3">
+                                        </audio>
+
                                     @endif
 
                                     <button onclick="copyToClipboard({{$chat_messages_value->message->id}})"><i class="fa-solid fa-copy"></i></button>
@@ -857,32 +864,43 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     @elseif($value->id == $chat_messages_value->user_id)
                     {{-- @else --}}
                     <div class="row message-body" style="position: relative">
                         <div class="col-sm-12 message-main-sender">
                             <div class="sender">
                                 <div class="message-text your_chat_msg" id="myInput{{isset($chat_messages_value->message) ? $chat_messages_value->message->id : ' '}}">
-                                    {{isset($chat_messages_value->message) ? $chat_messages_value->message->message : ' '}}
+                                    
+                                    @if($chat_messages_value->message->message_type == '1')
+                                    
+                                      {{$chat_messages_value->message->message}}
 
-                                    @if($chat_messages_value->message->file)
-                                    <img src="{{asset('assets/images/chat_img/' . $chat_messages_value->message->file)}}">
-                                    @endif
+                                    @elseif($chat_messages_value->message->message_type == '2')
+                                       
+                                      <img src="{{asset('assets/images/chat_img/' . $chat_messages_value->message->message)}}">
 
-                                    @if($chat_messages_value->message->video)
-                                    <video width="320" height="240" controls>
-                                        <source src="{{asset('assets/images/chat_img/video/' . $chat_messages_value->message->video)}}" type="video/mp4">
-                                      Your browser does not support the video tag.
-                                    </video>
-                                    @endif
+                                    @elseif($chat_messages_value->message->message_type == '3')
+                                    
+                                       <video width="320" height="240" controls>
+                                          <source src="{{asset('assets/images/chat_img/video/' . $chat_messages_value->message->message)}}" type="video/mp4">
+                                          Your browser does not support the video tag.
+                                        </video>
 
-                                    @if($chat_messages_value->message->doc_file)
-                                    <iframe src="{{asset('assets/images/chat_img/doc_file/' . $chat_messages_value->message->doc_file)}}" frameborder="0" style="width:100%;min-height:640px;"></iframe>
-                                    @endif
-
-                                    <button onclick="copyToClipboard({{$chat_messages_value->message->id}})"><i class="fa-solid fa-copy"></i>  </button>
+                                    @elseif($chat_messages_value->message->message_type == '4')
                                    
+                                        <iframe src="{{asset('assets/images/chat_img/doc_file/' . $chat_messages_value->message->message)}}" frameborder="0" style="width:100%;min-height:640px;"></iframe>
+
+                                    @elseif($chat_messages_value->message->message_type == '5')
+                                    
+                                        <audio controls>
+                                          <source src="{{asset('assets/images/chat_img/audio/' . $chat_messages_value->message->message)}}" type="audio/mp3">
+                                        </audio>
+
+                                    @endif
+
+                                    <button onclick="copyToClipboard({{isset($chat_messages_value->message) ? $chat_messages_value->message->id : ' '}})"><i class="fa-solid fa-copy"></i> </button>
+
                                 </div>
                                 <span class="message-time pull-right">
 
@@ -897,7 +915,7 @@
 
 
 
-                    
+
                 </div>
                 <div class="row reply">
                     <div class="col-sm-1 col-xs-1 reply-emojis">
@@ -1016,7 +1034,7 @@
         / You can provide user feedback here, e.g., show a message that the text has been copied /
     }
 
-    
+
 
 
 
@@ -1027,67 +1045,30 @@
         $('#user_chat' + $id).show();
     }
 
-    function delete_chat($id){
+    //delete chat
+    function delete_chat($id) {
 
         $url = "{{route('user.remove_chat',['_id_'])}}";
         $delete_url = $url.replace(['_id_'], $id);
 
         $.ajax({
-            url: $delete_url,
-            type: 'DELETE',
-            dataType: 'json',
-            success: function(response){
+            url: $delete_url
+            , type: 'DELETE'
+            , dataType: 'json'
+            , success: function(response) {
                 alert('chat removed');
             }
         });
 
     }
 
-
-
-    // function send_message($id) {
-
-    //     $.ajaxSetup({
-    //         headers: {
-    //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-    //         }
-    //     });
-    //     var user_id = $id;
-    //     var message = $("#message" + $id).val();
-
-    //     var url = "{{route('user.chat_message')}}";
-
-    //     $.ajax({
-    //         url: url
-    //         , type: 'POST'
-    //         , data: {
-    //             user_id: $id
-    //             , message: message
-    //         }
-    //         , dataType: 'json'
-    //         , success: function(response) {
-    //             console.log(response.from_chat_message);
-
-    //             $('.your_chat_msg').html(response.from_chat_message);
-
-    //             // $('#friend_chat_msg').html(response.to_chat_message);
-    //             $('#message_field').load(document.URL + ' #message_field');
-
-    //         }
-    //     , });
-    // }
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
-
+    //add chat messages
     $(".chat-form").submit(function(e) {
         $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
         e.preventDefault();
 
         var form = $(this);
@@ -1106,37 +1087,95 @@
             , contentType: false
             , processData: false
             , success: function(response) {
-                
-                // Assuming response.message contains the new message
-                var newMessage = response.message;
-                // below code is design code for single message
-                var msgHtml = `<div class="row message-body" style="position: relative">` +
-                    `<div class="col-sm-12 message-main-sender">` +
-                    `<div class="sender">` +
-                    `<div class="message-text your_chat_msg">` +
+               
+                if (response.message_type == '1') {
+
+                    var newMessage = response.message;
+
+                    var msgHtml = `<div class="row message-body" style="position: relative">` +
+                        `<div class="col-sm-12 message-main-sender">` +
+                        `<div class="sender">` +
+                        `<div class="message-text your_chat_msg">` +
                         //added message text into design
-                    `${newMessage}` +
-                    // `<img src="{{asset('${newMessage}')}}" width="350px" height="300px">` +
-                    `</div>` +
-                    `<span class="message-time pull-right">` +
-                    `</span>` +
-                    `</div>` +
-                    `</div>` +
-                    `</div>`;
+                        `${newMessage}` +
+                        `</div>` +
+                        `<span class="message-time pull-right">` +
+                        `</span>` +
+                        `</div>` +
+                        `</div>` +
+                        `</div>`;
+                } else if (response.message_type == '2') {
+
+                    var newMessage = response.message;
+
+                    var msgHtml = `<div class="row message-body" style="position: relative">` +
+                        `<div class="col-sm-12 message-main-sender">` +
+                        `<div class="sender">` +
+                        `<div class="message-text your_chat_msg">` +
+                        //added message text into design
+                        `<img src="{{asset('assets/images/chat_img/${newMessage}')}}">` +
+                        `</div>` +
+                        `<span class="message-time pull-right">` +
+                        `</span>` +
+                        `</div>` +
+                        `</div>` +
+                        `</div>`;
+                } else if (response.message_type == '3') {
+                    var newMessage = response.message;
+
+                    var msgHtml = `<div class="row message-body" style="position: relative">` +
+                        `<div class="col-sm-12 message-main-sender">` +
+                        `<div class="sender">` +
+                        `<div class="message-text your_chat_msg">` +
+                        //added message text into design
+                        `<video width="320" height="240" controls>
+                            <source src="{{asset('assets/images/chat_img/video/${newMessage}')}}" type="video/mp4">
+                        </video>` +
+                        `</div>` +
+                        `<span class="message-time pull-right">` +
+                        `</span>` +
+                        `</div>` +
+                        `</div>` +
+                        `</div>`;
+                } else if (response.message_type == '4') {
+                    var newMessage = response.message;
+
+                    var msgHtml = `<div class="row message-body" style="position: relative">` +
+                        `<div class="col-sm-12 message-main-sender">` +
+                        `<div class="sender">` +
+                        `<div class="message-text your_chat_msg">` +
+                        //added message text into design
+                        `<iframe src="{{asset('assets/images/chat_img/doc_file/${newMessage}')}}" frameborder="0" style="width:100%;min-height:640px;"></iframe>` +
+                        `</div>` +
+                        `<span class="message-time pull-right">` +
+                        `</span>` +
+                        `</div>` +
+                        `</div>` +
+                        `</div>`;
+                } else if (response.message_type == '5') {
+                    var newMessage = response.message;
+
+                    var msgHtml = `<div class="row message-body" style="position: relative">` +
+                        `<div class="col-sm-12 message-main-sender">` +
+                        `<div class="sender">` +
+                        `<div class="message-text your_chat_msg">` +
+                        //added message text into design
+                        `<audio controls>
+                          <source src="{{asset('assets/images/chat_img/audio/${newMessage}')}}" type="audio/mp3">
+                        </audio>` +
+                        `</div>` +
+                        `<span class="message-time pull-right">` +
+                        `</span>` +
+                        `</div>` +
+                        `</div>` +
+                        `</div>`;
+                }
 
 
-                
-                    // $('.modal-body').append(`
-                    //         <img src="/storage/images/${data.product_image}" width="350px" height="300px">
-                    //         <h5><strong>Product Name: ${data.product_name}</strong></h5>
-                    //         <p>Recipe(s): ${data.recipe}</p>
-                    //             `);
 
-
-
-                    //append message html into chat view list
+                //append message html into chat view list
                 var messageElement = $('#conversation').append(msgHtml);
-                
+
                 // empty input text for next msg
                 $('#message' + receiverUserId).val("");
 
