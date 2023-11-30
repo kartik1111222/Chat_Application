@@ -47,7 +47,7 @@ class ChatController extends Controller
     public function chat_message(Request $request)
     {
         $data = $request->all();
-        // dd();
+        // dd($data);
         $conversation = new Conversation();
         $conversation->from_user_id = Auth()->user()->id;
         $conversation->user_id = $data['receiver_user_id'];
@@ -60,6 +60,8 @@ class ChatController extends Controller
             $message->message = $data['message'];
             $message->message_type = '1';
             $message_type = '1';
+            $reply_message = $data['reply_message'];
+
         }
 
         if (isset($data['image'])) {
@@ -72,6 +74,8 @@ class ChatController extends Controller
                 $message->message_type = '2';
                 $data['message'] = $data['message'] . $name;
                 $message_type = '2';
+                // $reply_message = $data['reply_message'];
+
             }
         }
 
@@ -85,6 +89,8 @@ class ChatController extends Controller
                 $message->message_type = '3';
                 $data['message'] = $data['message'] . $videoname;
                 $message_type = '3';
+                // $reply_message = $data['reply_message'];
+
             }
         }
 
@@ -98,6 +104,8 @@ class ChatController extends Controller
                 $message->message_type = '4';
                 $data['message'] = $data['message'] . $doc_file_name;
                 $message_type = '4';
+                // $reply_message = $data['reply_message'];
+
             }
         }
 
@@ -111,14 +119,26 @@ class ChatController extends Controller
                 $message->message_type = '5';
                 $data['message'] = $data['message'] . $audioname;
                 $message_type = '5';
+                // $reply_message = $data['reply_message'];
+
             }
         }
+
+        if ($data['reply_message'] != null) {
+            $message->message = $data['message'];
+            $message->reply_message = $data['reply_message'];
+            $message->message_type = '6';
+            $message_type = '6';
+           
+        }
+
         $message->conversation_id = $conversation_id;
         $message->save();
 
         return response()->json([
             'message_type' => $message_type,
             'message' => $data['message'],
+            'reply_message' => $data['reply_message']
         ]);
 
         // $message = new Message();
